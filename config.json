@@ -1,0 +1,14 @@
+{
+  "iterations": 40,
+  "distance": 4,
+  "delay": 0,
+  "speed": 1,
+  "extraSpeed": 1,
+  "colourMode": "local rainbow",
+  "variation": "none",
+  "startXs": [0, 0],
+  "startYs": [0, 0],
+  "rotations": [0, 180],
+  "simultaneousDrawing": true,
+  "numOfDragons": 2
+}
