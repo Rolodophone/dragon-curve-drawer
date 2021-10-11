@@ -8,8 +8,8 @@ import time
 
 
 def main():
-    iterations, distance, delay, speed, extraSpeed, colourMode, variation, startXs, startYs, rotations, simultaneousDrawing, numOfDragons \
-        = config()
+    iterations, distance, delay, speed, extraSpeed, colourMode, variation, startXs, startYs, rotations, simultaneousDrawing, numOfDragons, \
+        drawInterval = config()
 
     commandQueue = queue.Queue(1)
     threads = []
@@ -29,19 +29,19 @@ def main():
         thread.start()
         threads.append(thread)
 
-    processQueue(commandQueue)
+    processQueue(commandQueue, drawInterval)
 
     # wait until drawing is finished
     for thread in threads:
         thread.join()
 
 
-def processQueue(commandQueue):
-    while not commandQueue.empty():
-        commandQueue.get()()  # invoke command
+def processQueue(commandQueue, drawInterval):
+    while threading.activeCount() > 1:
+        while not commandQueue.empty():
+            commandQueue.get()()  # invoke command
 
-    time.sleep(0.1)
-    processQueue(commandQueue)
+        time.sleep(drawInterval)
 
     print("Finished drawing.")
 
@@ -61,7 +61,7 @@ def config():
             d = json.load(file)
 
         return d["iterations"], d["distance"], d["delay"], d["speed"], d["extraSpeed"], d["colourMode"], d["variation"], d["startXs"], \
-            d["startYs"], d["rotations"], d["simultaneousDrawing"], d["numOfDragons"]
+            d["startYs"], d["rotations"], d["simultaneousDrawing"], d["numOfDragons"], d["drawInterval"]
 
     ans = input("Multi-dragon mode (y/N)? ")
     if ans == "y":
@@ -90,6 +90,7 @@ def config():
     extraSpeed = int(input("Draw how many lines at a time (1+)? "))
     colourMode = input("Colour mode (none/global rainbow/local rainbow)? ")
     variation = input("Variation (none/onoff)? ")
+    drawInterval = float(input("Draw interval (seconds)? "))
 
     if not (colourMode == "none" or colourMode == "global rainbow" or colourMode == "local rainbow") or not (variation == "none" or variation == "onoff"):
         print("Invalid input")
@@ -111,7 +112,7 @@ def config():
         rotations = [0]
 
     return iterations, distance, delay, speed, extraSpeed, colourMode, variation, startXs, startYs, rotations, \
-        simultaneousDrawing, numOfDragons
+        simultaneousDrawing, numOfDragons, drawInterval
 
 
 def drawDragon(t: turtle.Turtle, iterations: int, distance: int, colourMode: str, variation: str, startX: int, startY: int, rotation: int,
